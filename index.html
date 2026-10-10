@@ -1,0 +1,1765 @@
+﻿<!DOCTYPE html>
+<html lang="pa">
+<head><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffd76e">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ਪਿੰਡ ਜਾਂ ਕਿਸ਼ੇ ਦੇ ਰਿਸ਼ਤੇਦਾਰਾਂ ਦੀ ਵੰਸ਼ਾਵਲੀ </title>
+<style>
+  :root{
+    --line:#c9a227;
+    --male-a:#1e6091; --male-b:#2a7fbf;
+    --fem-a:#9c2b5e;  --fem-b:#c2457c;
+    --panel:#16232f;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh;
+    font-family:'Noto Sans Gurmukhi','Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 20% 0%,#0f2027,#203a43 45%,#2c5364);
+    color:#eaf2f8;
+  }
+  header{text-align:center;padding:8px 12px 2px}
+  h1{margin:0;font-size:1.05rem;color:#ffd76e;letter-spacing:.3px;font-weight:700}
+  header p{margin:2px 0 0;color:#b7cdda;font-size:.66rem;opacity:.85}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+           align-items:center;padding:6px 10px 4px}
+  .btn,button,.btn-secondary,.btn-folder{
+    background:#ffd76e;color:#20313a;border:none;border-radius:999px;
+    padding:6px 12px;font:inherit;font-weight:600;cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,.32);transition:.18s;
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:.78rem;
+  }
+  .btn:hover,button:hover{background:#ffe79a;transform:translateY(-1px)}
+  .btn-secondary{background:#3a5a7a;color:#fff}
+  .btn-secondary:hover{background:#4a6a8a}
+  .btn-folder{background:#4caf50;color:#fff}
+  .btn-folder:hover{background:#5fc063}
+  .btn-folder.active{background:#2e7d32}
+
+  .info-bar{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:8px 12px;
+    margin:6px 12px 6px;
+    background:linear-gradient(135deg, rgba(255,215,110,.10), rgba(255,215,110,.03));
+    border:1.5px solid rgba(255,215,110,.35);
+    border-radius:10px;
+    box-shadow:0 4px 16px rgba(0,0,0,.35);
+    min-height:42px;
+  }
+  .info-bar input[type=search]{
+    padding:7px 14px;border-radius:999px;border:1px solid #56788c;
+    background:#ffffff14;color:#fff;font:inherit;
+    font-size:.82rem;outline:none;
+    flex:0 1 180px;min-width:130px;
+  }
+  .info-bar input[type=search]::placeholder{color:#9fb6c4}
+  .info-bar label{
+    color:#ffd76e;font-weight:700;font-size:.82rem;
+    display:flex;align-items:center;gap:5px;
+    white-space:nowrap;
+  }
+  .info-bar select{
+    padding:7px 12px;background:#22384c;color:#fff;
+    border:1.5px solid #3a5a7a;border-radius:7px;
+    font:inherit;font-size:.82rem;font-weight:600;
+    cursor:pointer;min-width:130px;outline:none;
+    transition:.15s;
+  }
+  .info-bar select:hover{border-color:#ffd76e}
+  .info-bar select:focus{border-color:#ffd76e;box-shadow:0 0 0 3px rgba(255,215,110,.2)}
+  .info-bar select option{background:#16232f;color:#fff;padding:6px}
+  .info-bar .mini-btn{padding:5px 10px;font-size:.72rem}
+  .info-bar .caste-info{
+    color:#9fd3ff;font-size:.76rem;
+    padding:4px 10px;background:rgba(0,0,0,.25);border-radius:999px;
+    white-space:nowrap;
+  }
+  .info-bar .hint{
+    color:#ffd76e;font-size:.78rem;font-weight:600;
+    margin-left:auto;padding:0;
+    white-space:nowrap;line-height:1.4;
+  }
+
+  .tree-wrap{overflow:auto;padding:4px 16px 40px;text-align:left}
+  .tree{display:inline-block;text-align:left}
+
+  .family-block{
+    display:inline-block;
+    padding:2px 8px 4px;
+    border-radius:8px;
+    background:rgba(255,255,255,.03);
+    border:1px dashed rgba(255,215,110,.20);
+    margin:2px auto;
+    transition:.25s;
+  }
+  .family-block.active{
+    border:1.5px solid #ffd76e;
+    background:rgba(255,215,110,.07);
+    box-shadow:0 0 18px rgba(255,215,110,.18);
+  }
+  .family-label{
+    text-align:center;color:#9fb6c4;
+    font-size:.62rem;font-weight:600;
+    padding:2px 6px;margin:0 auto;
+    display:inline-block;white-space:nowrap;
+    letter-spacing:.2px;line-height:1.2;
+  }
+  .family-block.active .family-label{color:#e8ffb0}
+  .family-separator{
+    text-align:center;color:#ffd76e;font-size:.6rem;
+    font-weight:700;letter-spacing:3px;margin:4px 0;
+    opacity:.35;white-space:nowrap;line-height:1;
+  }
+
+  .empty-caste{
+    text-align:center;padding:50px 20px;
+    color:#9fb6c4;font-size:.95rem;line-height:1.8;
+  }
+  .empty-caste b{color:#ffd76e}
+
+  .tree ul{
+    list-style:none;margin:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:0 0 0 44px;position:relative;
+  }
+  .tree > ul,
+  .tree .family-block > ul{padding-left:0}
+  .tree li{
+    list-style:none;display:flex;align-items:center;
+    position:relative;
+    padding:3px 0;
+  }
+  .tree li::before{
+    content:'';position:absolute;
+    left:-22px;top:0;bottom:0;
+    border-left:2px solid var(--line);
+  }
+  .tree li:first-child::before{top:50%}
+  .tree li:last-child::before{bottom:50%}
+  .tree li:only-child::before{display:none}
+  .tree li::after{
+    content:'';position:absolute;
+    left:-22px;top:50%;width:22px;
+    border-top:2px solid var(--line);
+  }
+  .tree li:only-child::after{left:-44px;width:44px}
+  .tree li > ul::before{
+    content:'';position:absolute;
+    left:0;top:50%;width:22px;
+    border-top:2px solid var(--line);
+  }
+  .tree > ul > li::before,
+  .tree > ul > li::after,
+  .tree .family-block > ul > li::before,
+  .tree .family-block > ul > li::after{display:none}
+
+  .node-box{
+    display:flex;flex-direction:column;align-items:center;
+    gap:2px;position:relative;z-index:2;
+  }
+  .node-arrows{
+    display:flex;gap:4px;justify-content:center;
+    height:16px;align-items:center;
+  }
+  .arr-btn{
+    width:26px;height:15px;border-radius:4px;
+    background:#22384c;color:#ffd76e;font-size:10px;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 1px 4px rgba(0,0,0,.4);
+    border:1px solid #3a5a7a;cursor:pointer;transition:.15s;
+  }
+  .arr-btn:hover:not(.disabled){background:#ffd76e;color:#20313a;transform:none}
+  .arr-btn.disabled{opacity:.28;cursor:not-allowed;background:#1a2938}
+  .arr-btn.arr-left{color:#ff9a9a}
+  .arr-btn.arr-right{color:#9affb4}
+
+  .couple{
+    display:flex;flex-direction:column;align-items:center;
+    gap:1px;position:relative;
+  }
+  .heart{color:#ff6b8b;font-size:16px;line-height:1;margin:0;}
+
+  .card{
+    min-width:158px;max-width:220px;
+    padding:6px 12px 6px 6px;
+    border-radius:12px;color:#fff;
+    display:flex;align-items:center;gap:9px;
+    border:1px solid #ffffff33;box-shadow:0 4px 12px rgba(0,0,0,.45);
+    transition:transform .18s, box-shadow .18s;position:relative;
+  }
+  .card.male{background:linear-gradient(160deg,var(--male-a),var(--male-b))}
+  .card.female{background:linear-gradient(160deg,var(--fem-a),var(--fem-b))}
+  .card.root-card{
+    box-shadow:0 0 0 2px #ffd76e, 0 4px 12px rgba(0,0,0,.45);
+  }
+
+  /* ✅ ਨਵਾਂ: ਜਾਣਕਾਰੀ ਬਟਨ — ਸੱਜੇ-ਉੱਪਰਲੀ ਨੁੱਕਰ ਤੇ ਛੋਟਾ ਪੀਲ਼ਾ ਬਾਕਸ */
+  .info-btn{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:#ffd76e;
+    color:#20313a;
+    font-size:11px;
+    font-weight:900;
+    border:1.5px solid #20313a;
+    padding:0;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    box-shadow:0 2px 5px rgba(0,0,0,.5);
+    z-index:5;
+    transition:.15s;
+    line-height:1;
+    font-family:Georgia, serif;
+    font-style:italic;
+  }
+  .info-btn:hover{background:#ffe79a;transform:scale(1.2);color:#000}
+  .info-btn.empty{
+    background:#7a8598;
+    color:#e0e6ed;
+    opacity:.7;
+  }
+  .info-btn.empty:hover{background:#95a0b3}
+
+  .card .avatar{
+    width:46px;height:46px;border-radius:50%;overflow:hidden;
+    background:linear-gradient(160deg,#ffffff2a,#ffffff10);
+    flex-shrink:0;position:relative;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:1.25rem;color:#fff;
+    border:2px solid #ffffff66;text-transform:uppercase;
+    cursor:pointer;transition:.15s;
+  }
+  .card .avatar:hover{border-color:#ffd76e;transform:scale(1.08)}
+  .card .avatar.no-photo{cursor:default}
+  .card .avatar.no-photo:hover{border-color:#ffffff66;transform:none}
+  .card .avatar img{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;border-radius:50%;display:block;
+  }
+  .card .avatar::after{
+    content:'🔍';position:absolute;bottom:-4px;right:-4px;
+    font-size:9px;background:#ffd76e;color:#20313a;
+    width:14px;height:14px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid #20313a;opacity:0;transition:.15s;
+  }
+  .card .avatar:not(.no-photo):hover::after{opacity:1}
+  .card .details{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+  .card .name{font-weight:700;font-size:.95rem;white-space:nowrap;
+              overflow:hidden;text-overflow:ellipsis}
+  .card .note{font-size:.66rem;opacity:.85;white-space:nowrap;
+              overflow:hidden;text-overflow:ellipsis}
+  .card.hit{outline:3px solid #00e5ff;outline-offset:3px}
+
+  /* ✅ ਨਵਾਂ: ਜਾਣਕਾਰੀ ਪੌਪਅੱਪ */
+  .info-popup{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.82);
+    z-index:2600;
+    justify-content:center;align-items:center;padding:20px;
+  }
+  .info-popup.open{display:flex}
+  .info-popup-box{
+    background:linear-gradient(160deg,#1e3042,#16232f);
+    border:1.5px solid #ffd76e;
+    border-radius:14px;
+    padding:22px 24px 20px;
+    max-width:520px;width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,.8);
+    position:relative;
+    max-height:80vh;
+    overflow:auto;
+  }
+  .info-popup-close{
+    position:absolute;top:10px;right:10px;
+    background:#7a2b3e;color:#fff;
+    border:none;border-radius:50%;
+    width:32px;height:32px;font-size:.95rem;font-weight:700;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:.15s;
+    box-shadow:0 3px 8px rgba(0,0,0,.5);
+  }
+  .info-popup-close:hover{background:#a03550;transform:scale(1.08)}
+  .info-popup-box h3{
+    margin:0 40px 4px 0;
+    color:#ffd76e;
+    font-size:1.1rem;
+    font-weight:700;
+    display:flex;align-items:center;gap:8px;
+  }
+  .info-popup-box h3 .badge{
+    font-size:.62rem;
+    background:rgba(255,215,110,.18);
+    color:#ffd76e;
+    padding:2px 8px;
+    border-radius:999px;
+    font-weight:600;
+    letter-spacing:.3px;
+  }
+  .info-popup-body{
+    margin-top:8px;
+    color:#eaf2f8;
+    font-size:.92rem;
+    line-height:1.7;
+    white-space:pre-wrap;
+    word-break:break-word;
+    background:rgba(0,0,0,.28);
+    padding:12px 14px;
+    border-radius:9px;
+    border-left:3px solid #ffd76e;
+    min-height:40px;
+  }
+  .info-popup-body.empty{color:#9fb6c4;font-style:italic}
+
+  .overlay{
+    position:fixed;inset:0;background:rgba(8,18,28,.94);
+    z-index:3000;display:none;justify-content:center;align-items:center;padding:20px;
+  }
+  .overlay.open{display:flex}
+  .overlay-box{
+    background:var(--panel);border:1px solid #3a5a7a;border-radius:18px;
+    padding:30px 32px;max-width:480px;width:100%;text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.7);
+  }
+  .overlay-box h2{margin:0 0 12px;color:#ffd76e;font-size:1.4rem}
+  .overlay-box p{margin:0 0 20px;color:#b7cdda;font-size:.92rem;line-height:1.6}
+  .overlay-box .icon{font-size:3.5rem;margin-bottom:6px;display:block}
+  .overlay-box .actions{display:flex;flex-direction:column;gap:10px;align-items:center}
+  .overlay-box .actions button{width:100%;justify-content:center;padding:12px 20px;font-size:1rem}
+
+  .lightbox{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.94);
+    z-index:2500;justify-content:center;align-items:center;padding:20px;
+  }
+  .lightbox.open{display:flex}
+  .lightbox img{
+    max-width:92vw;max-height:88vh;border-radius:10px;
+    box-shadow:0 20px 60px rgba(0,0,0,.85);background:#22384c;
+  }
+  .lightbox-close{
+    position:absolute;top:18px;right:18px;
+    background:#ffd76e;color:#20313a;border-radius:50%;
+    width:42px;height:42px;font-size:1.1rem;font-weight:700;padding:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .lightbox-name{
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+    color:#ffd76e;font-weight:600;font-size:1rem;
+    background:rgba(0,0,0,.6);padding:6px 16px;border-radius:999px;
+  }
+
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);
+         z-index:1000;padding:20px;overflow:auto}
+  .modal.open{display:flex;justify-content:center;align-items:flex-start}
+  .modal-content{
+    background:var(--panel);border:1px solid #3a5a7a;border-radius:16px;
+    padding:24px;max-width:1600px;width:100%;position:relative;
+    max-height:calc(100vh - 40px);display:flex;flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,.7);
+  }
+  .modal-close{
+    position:absolute;top:12px;right:12px;
+    width:36px;height:36px;padding:0;
+    background:#7a2b3e;color:#fff;
+    border-radius:50%;font-size:1rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.5);
+    cursor:pointer;transition:.15s;border:none;
+  }
+  .modal-close:hover{background:#a03550;transform:scale(1.05)}
+  .modal-content h2{margin:0 0 6px;color:#ffd76e;font-size:1.3rem;padding-right:44px}
+  .modal-help{margin:0 0 14px;color:#9fb6c4;font-size:.86rem;line-height:1.5}
+  .caste-tag{
+    display:inline-block;background:#4a6a1e;color:#e8ffb0;
+    padding:3px 12px;border-radius:999px;font-size:.8rem;
+    margin-left:6px;font-weight:700;
+  }
+  .ref-panel{
+    background:#0f1a25;border:1px solid #2c4a66;border-radius:10px;
+    padding:10px 14px;margin-bottom:14px;font-size:.82rem;
+    color:#b7cdda;max-height:80px;overflow:auto;line-height:1.7;
+  }
+  .ref-panel b{color:#ffd76e}
+  .ref-panel span{display:inline-block;margin-right:12px;white-space:nowrap}
+  .table-wrap{
+    overflow:auto;border:1px solid #2c4a66;border-radius:10px;
+    background:#0f1a25;flex:1;min-height:180px;
+  }
+  #editTable{width:100%;border-collapse:collapse;font-size:.85rem}
+  #editTable thead{position:sticky;top:0;z-index:2}
+  #editTable th{
+    background:#22384c;color:#ffd76e;padding:10px 8px;text-align:left;
+    font-weight:600;white-space:nowrap;border-bottom:1px solid #2c4a66;
+  }
+  #editTable td{padding:4px 6px;border-bottom:1px solid #1d2f42;vertical-align:middle}
+  #editTable input[type=text],#editTable input:not([type]),#editTable select,#editTable textarea{
+    width:100%;padding:7px 10px;background:#16283a;border:1px solid #2c4a66;
+    border-radius:6px;color:#fff;font:inherit;font-size:.85rem;outline:none;
+  }
+  #editTable textarea{
+    min-height:42px;resize:vertical;
+    font-family:inherit;
+    line-height:1.35;
+  }
+  #editTable input:focus,#editTable select:focus,#editTable textarea:focus{border-color:#ffd76e}
+  #editTable input::placeholder,#editTable textarea::placeholder{color:#6a839a}
+  .photo-cell{display:flex;gap:4px;align-items:center;min-width:200px}
+  .photo-thumb{
+    width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;
+    background:#22384c;border:1px solid #2c4a66;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.85rem;color:#9fb6c4;
+  }
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-btn{
+    background:#3a5a7a;color:#fff;border-radius:6px;
+    padding:6px 8px;font-size:.95rem;cursor:pointer;line-height:1;
+    box-shadow:none;flex-shrink:0;border:none;
+  }
+  .photo-btn:hover{background:#4a6a8a;transform:none}
+  .photo-clear-btn{
+    background:#7a2b3e;color:#fff;border:none;border-radius:6px;
+    padding:6px 8px;font-size:.9rem;cursor:pointer;line-height:1;
+    box-shadow:none;flex-shrink:0;
+  }
+  .photo-clear-btn:hover{background:#a03550;transform:none}
+  .del-btn{
+    background:#7a2b3e;color:#fff;border:none;border-radius:6px;
+    padding:6px 10px;font-size:.85rem;cursor:pointer;
+    box-shadow:none;line-height:1;
+  }
+  .del-btn:hover{background:#a03550;transform:none}
+  .modal-actions{
+    display:flex;gap:10px;padding-top:16px;flex-wrap:wrap;align-items:center;
+  }
+  .modal-actions #saveEditBtn{background:#4caf50;color:#fff}
+  .modal-actions #saveEditBtn:hover{background:#5fc063}
+
+  @media print{
+    body{background:#fff;color:#000}
+    .toolbar,.modal,.overlay,.lightbox,.info-popup,.node-arrows,.info-bar,.info-btn{display:none !important}
+    .card{box-shadow:none;border:1px solid #333}
+    h1{color:#000}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌳 ਪਿੰਡ ਜਾਂ ਕਿਸ਼ੇ ਦੇ ਰਿਸ਼ਤੇਦਾਰਾਂ ਦੀ ਵੰਸ਼ਾਵਲੀ</h1>
+</header>
+
+<div class="toolbar">
+  <button class="btn-folder" id="folderBtn">📁 ਫੋਲਡਰ ਚੁਣੋ</button>
+  <button id="saveAllBtn">💾 ਸੇਵ ਕਰੋ</button>
+  <button id="downloadBtn">📥 ਐਕਸਲ ਡਾਊਨਲੋਡ</button>
+  <label class="btn">📂 ਐਕਸਲ ਅੱਪਲੋਡ
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
+  </label>
+  <button id="editBtn">✏️ ਸੋਧੋ</button>
+  <button id="collapseAllBtn" class="btn-secondary">⏏ ਸਭ ਬੰਦ ਕਰੋ</button>
+  <button id="printBtn" class="btn-secondary">🖨 ਪ੍ਰਿੰਟ</button>
+</div>
+
+<div class="info-bar">
+  <input type="search" id="search" placeholder="🔍 ਨਾਮ ਖੋਜੋ...">
+  <label for="casteCombo">🌾 ਗੋਤ ਜਾਂ ਮੁਖੀ ਰਿਸ਼ਤੇਦਾਰ ਚੁਣੋ:</label>
+  <select id="casteCombo"></select>
+  <label for="headCombo">👑 ਪਰਿਵਾਰਕ ਮੁਖੀ ਚੁਣੋ:</label>
+  <select id="headCombo"></select>
+  <button id="addCasteBtn" class="btn-secondary mini-btn" title="ਨਵੀਂ ਗੋਤ ਜੋੜੋ">+ ਨਵੀਂ</button>
+  <button id="delCasteBtn" class="btn-secondary mini-btn" title="ਇਹ ਗੋਤ ਹਟਾਓ">🗑</button>
+  <span class="caste-info" id="status"></span>
+  <span class="hint" id="hint"></span>
+</div>
+
+<div class="tree-wrap">
+  <div class="tree" id="tree"></div>
+</div>
+
+<!-- ✅ ਨਵਾਂ: ਜਾਣਕਾਰੀ ਪੌਪਅੱਪ -->
+<div class="info-popup" id="infoPopup">
+  <div class="info-popup-box">
+    <button class="info-popup-close" id="infoPopupClose">✕</button>
+    <h3 id="infoPopupName"></h3>
+    <div class="info-popup-body" id="infoPopupBody"></div>
+  </div>
+</div>
+
+<!-- FOLDER OVERLAY -->
+<div class="overlay" id="folderOverlay">
+  <div class="overlay-box">
+    <span class="icon">📁</span>
+    <h2>ਪਰਿਵਾਰ ਫੋਲਡਰ ਚੁਣੋ</h2>
+    <p>
+      ਐਕਸਲ ਫਾਈਲ (ਸਾਰੀਆਂ ਗੋਤਾਂ ਦੀਆਂ ਸ਼ੀਟਾਂ) ਅਤੇ ਤਸਵੀਰਾਂ ਇਸ ਫੋਲਡਰ ਵਿੱਚ ਸੇਵ ਹੋਣਗੀਆਂ।<br>
+      ਜੇਕਰ ਫੋਲਡਰ ਪਹਿਲਾਂ ਬਣਿਆ ਹੋਇਆ ਹੈ ਤਾਂ ਉਹੀ ਚੁਣੋ — ਡਾਟਾ ਆਪਣੇ ਆਪ ਲੋਡ ਹੋ ਜਾਵੇਗਾ।
+    </p>
+    <div class="actions">
+      <button id="selectFolderBtn">📁 ਫੋਲਡਰ ਚੁਣੋ ਅਤੇ ਸ਼ੁਰੂ ਕਰੋ</button>
+      <button id="skipFolderBtn" class="btn-secondary">ਫੋਲਡਰ ਤੋਂ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖੋ</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <img id="lightboxImg" alt="">
+  <div class="lightbox-name" id="lightboxName"></div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <button class="modal-close" id="modalCloseBtn" title="ਬੰਦ ਕਰੋ">✕</button>
+    <h2>✏️ ਡਾਟਾ ਸੋਧੋ <span class="caste-tag" id="editCasteTag"></span></h2>
+    <p class="modal-help">
+      ਇਹ ਟੇਬਲ ਸਿਰਫ਼ ਚੁਣੀ ਹੋਈ ਗੋਤ ਦੇ ਮੈਂਬਰ ਦਿਖਾਉਂਦਾ ਹੈ।
+      <b>ਨਵਾਂ ਪਰਿਵਾਰ ਜੋੜਨ ਲਈ:</b> "+ ਨਵਾਂ ਪਰਿਵਾਰ (ਮੁਖੀ)" ਦਬਾਓ, ਨਾਮ ਭਰੋ ਅਤੇ <b>ਪਿਤਾ ਤੇ ਮਾਤਾ ID ਖਾਲੀ ਛੱਡੋ</b>।
+      <br><b>📷 ਤਸਵੀਰ ਅੱਪਲੋਡ:</b> ਪਹਿਲਾਂ ਫੋਲਡਰ ਚੁਣਿਆ ਹੋਣਾ ਜ਼ਰੂਰੀ ਹੈ — ਅਸਲ ਤਸਵੀਰ ਅਤੇ ਥੰਬਨੇਲ ਦੋਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਸੇਵ ਹੋਣਗੇ।
+      <br><b>ℹ ਹੋਰ ਜਾਣਕਾਰੀ:</b> ਸਭ ਤੋਂ ਸੱਜੇ ਕਾਲਮ ਵਿੱਚ ਭਰੋ — ਇਹ ਕਾਰਡ ਦੇ ਸੱਜੇ-ਉੱਪਰਲੀ ਨੁੱਕਰ ਵਾਲੇ ਪੀਲ਼ੇ ਬਟਨ ਤੇ ਦਿਖੇਗੀ।
+    </p>
+    <div class="ref-panel" id="refPanel"></div>
+    <div class="table-wrap">
+      <table id="editTable">
+        <thead>
+          <tr>
+            <th style="width:55px">ID</th>
+            <th style="width:130px">ਨਾਮ</th>
+            <th style="width:75px">ਲਿੰਗ</th>
+            <th style="width:65px">ਪਿਤਾ ID</th>
+            <th style="width:65px">ਮਾਤਾ ID</th>
+            <th style="width:75px">ਜੀਵਨ ਸਾਥੀ ID</th>
+            <th style="width:150px">ਟਿੱਪਣੀ</th>
+            <th style="width:210px">ਤਸਵੀਰ</th>
+            <th style="width:220px">ℹ ਹੋਰ ਜਾਣਕਾਰੀ</th>
+            <th style="width:50px"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="addRowBtn">+ ਨਵਾਂ ਮੈਂਬਰ ਜੋੜੋ</button>
+      <button id="addFamilyBtn" style="background:#4caf50;color:#fff">+ ਨਵਾਂ ਪਰਿਵਾਰ (ਮੁਖੀ) ਜੋੜੋ</button>
+      <div style="flex:1"></div>
+      <button class="btn-secondary" id="cancelEditBtn">ਰੱਦ ਕਰੋ</button>
+      <button id="saveEditBtn">💾 ਸੇਵ ਕਰੋ</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* =========================================================
+   1) ਡਾਟਾ
+   ========================================================= */
+const DEFAULT_CASTES = [
+  { id: '1', name: '-' }
+];
+
+const DEFAULT_CASTE_DATA = {
+  '1': []
+};
+
+let castesList    = DEFAULT_CASTES.map(c => ({...c}));
+let casteData     = {};
+Object.keys(DEFAULT_CASTE_DATA).forEach(k => {
+  casteData[k] = DEFAULT_CASTE_DATA[k].map(r => ({...r}));
+});
+let currentCasteId = castesList[0]?.id || null;
+let dirHandle      = null;
+const expandedNodes = new Set();
+let currentHeadFilter = '__NONE__';
+
+/* =========================================================
+   2) ਹੈਲਪਰ
+   ========================================================= */
+/* ✅ ਨਵਾਂ 'info' ਕਾਲਮ ਸਭ ਤੋਂ ਸੱਜੇ ਜੋੜਿਆ */
+const HEADERS = ['id','name','gender','father_id','mother_id','spouse_id','note','photo','info'];
+const ALIASES = {
+  id:        ['id','pid','personid','ਆਈਡੀ','ਕ੍ਰਮ','ਨੰਬਰ'],
+  name:      ['name','ਨਾਮ'],
+  gender:    ['gender','sex','ਲਿੰਗ'],
+  father_id: ['fatherid','father','ਪਿਤਾ','ਪਿਤਾਆਈਡੀ'],
+  mother_id: ['motherid','mother','ਮਾਤਾ','ਮਾਤਾਆਈਡੀ'],
+  spouse_id: ['spouseid','spouse','wife','husband','ਜੀਵਨਸਾਥੀ','ਪਤਨੀ','ਪਤੀ'],
+  note:      ['note','notes','remark','ਟਿੱਪਣੀ'],
+  photo:     ['photo','image','avatar','img','pic','picture','ਤਸਵੀਰ','ਫੋਟੋ'],
+  info:      ['info','information','details','moreinfo','more','extra','ਜਾਣਕਾਰੀ','ਹੋਰਜਾਣਕਾਰੀ','ਵੇਰਵਾ','ਵੇਰਵਾ']
+};
+const normKey = k => String(k).toLowerCase().replace(/[\s_\-.\u00a0]/g,'');
+const esc = s => String(s??'').replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isFemale = g => {
+  const s = String(g||'').toLowerCase();
+  return s.includes('ਇਸਤਰੀ') || s.includes('female') || s==='f' || s.includes('ਮਹਿਲਾ');
+};
+const isBase64 = v => typeof v === 'string' && v.startsWith('data:');
+
+function normalizeRow(obj){
+  const out = {id:'',name:'',gender:'',father_id:'',mother_id:'',spouse_id:'',note:'',photo:'',info:''};
+  for (const rawKey in obj){
+    const nk = normKey(rawKey);
+    for (const field in ALIASES){
+      if (ALIASES[field].includes(nk)){ out[field] = String(obj[rawKey] ?? '').trim(); break; }
+    }
+  }
+  return out;
+}
+function normalizeCasteRow(obj){
+  const out = {id:'', name:''};
+  for (const rawKey in obj){
+    const nk = normKey(rawKey);
+    if (['id','casteid','ਆਈਡੀ','ਕ੍ਰਮ','ਨੰਬਰ'].includes(nk)) out.id = String(obj[rawKey] ?? '').trim();
+    else if (['name','castename','gotra','got','ਗੋਤ','ਨਾਮ','ਜਾਤ'].includes(nk)) out.name = String(obj[rawKey] ?? '').trim();
+  }
+  return out;
+}
+function sanitizeSheetName(name){
+  return String(name || '').replace(/[\[\]:*?\/\\]/g, '_').slice(0, 31) || 'Sheet';
+}
+function uniqueSheetName(base, used){
+  let sanitized = sanitizeSheetName(base);
+  let candidate = sanitized, i = 1;
+  while (used.has(candidate)){
+    candidate = sanitized.slice(0, 28) + '_' + i;
+    i++;
+  }
+  used.add(candidate);
+  return candidate;
+}
+function photoKey(casteId, memberId){
+  return 'c' + casteId + '_' + memberId;
+}
+
+const COMMON_IMG_EXTS = ['jpg','jpeg','png','gif','webp','bmp','svg','JPG','JPEG','PNG','GIF','WEBP','BMP','SVG'];
+function extFromFile(file){
+  const m = String(file.name || '').match(/\.([a-zA-Z0-9]+)$/);
+  if (m) return m[1].toLowerCase();
+  const t = String(file.type || '');
+  if (t.includes('png')) return 'png';
+  if (t.includes('gif')) return 'gif';
+  if (t.includes('webp')) return 'webp';
+  if (t.includes('bmp')) return 'bmp';
+  if (t.includes('svg')) return 'svg';
+  return 'jpg';
+}
+
+/* =========================================================
+   3) ਰਿਸ਼ਤੇ + ਪਰਿਵਾਰ ਮੁਖੀ
+   ========================================================= */
+function childSortKey(p){
+  const married = !!(p.spouse_id && String(p.spouse_id).trim());
+  const female  = isFemale(p.gender);
+  if (married && !female) return 1;
+  if (married && female)  return 2;
+  if (!married && !female) return 3;
+  if (!married && female)  return 4;
+  return 5;
+}
+function compareIds(a, b){
+  const na = parseFloat(a), nb = parseFloat(b);
+  if (!isNaN(na) && !isNaN(nb)) return na - nb;
+  return String(a).localeCompare(String(b));
+}
+function getChildrenOf(person, byId, data){
+  const parentIds = [String(person.id)];
+  if (person.spouse_id) parentIds.push(String(person.spouse_id));
+  const children = data.filter(c =>
+    (c.father_id && parentIds.includes(String(c.father_id))) ||
+    (c.mother_id && parentIds.includes(String(c.mother_id)))
+  );
+  children.sort((a, b) => {
+    const ka = childSortKey(a), kb = childSortKey(b);
+    if (ka !== kb) return ka - kb;
+    return compareIds(a.id, b.id);
+  });
+  return children;
+}
+function getFamilyHeadId(personId, byId){
+  let person = byId[String(personId)];
+  if (!person) return null;
+  const visited = new Set();
+  while (person && !visited.has(String(person.id))){
+    visited.add(String(person.id));
+    let parent = null;
+    if (person.father_id && byId[person.father_id]) parent = byId[person.father_id];
+    else if (person.mother_id && byId[person.mother_id]) parent = byId[person.mother_id];
+    if (!parent && person.spouse_id && byId[person.spouse_id]){
+      const sp = byId[person.spouse_id];
+      if (sp.father_id && byId[sp.father_id]) parent = byId[sp.father_id];
+      else if (sp.mother_id && byId[sp.mother_id]) parent = byId[sp.mother_id];
+    }
+    if (parent){ person = parent; continue; }
+    return String(person.id);
+  }
+  return String(person.id);
+}
+function findFamilyHeads(data){
+  const byId = {};
+  data.forEach(r => byId[String(r.id)] = r);
+  const noParents = data.filter(r => !r.father_id && !r.mother_id);
+  noParents.sort((a,b) => (isFemale(a.gender)?1:0) - (isFemale(b.gender)?1:0));
+  const heads = [];
+  const processed = new Set();
+  for (const r of noParents){
+    if (processed.has(String(r.id))) continue;
+    if (r.spouse_id && byId[r.spouse_id]){
+      const sp = byId[r.spouse_id];
+      if (sp.father_id || sp.mother_id){
+        processed.add(String(r.id));
+        continue;
+      }
+    }
+    heads.push(r);
+    processed.add(String(r.id));
+    if (r.spouse_id) processed.add(String(r.spouse_id));
+  }
+  return heads.length ? heads : (data.length ? [data[0]] : []);
+}
+function countFamilyMembers(head, data, byId){
+  const members = new Set();
+  const queue = [String(head.id)];
+  while (queue.length){
+    const id = queue.shift();
+    if (members.has(id)) continue;
+    members.add(id);
+    const p = byId[id];
+    if (!p) continue;
+    if (p.spouse_id) members.add(String(p.spouse_id));
+    const parentIds = [id];
+    if (p.spouse_id) parentIds.push(String(p.spouse_id));
+    for (const c of data){
+      const cid = String(c.id);
+      if (members.has(cid)) continue;
+      if (parentIds.includes(String(c.father_id)) ||
+          parentIds.includes(String(c.mother_id))) queue.push(cid);
+    }
+  }
+  return members.size;
+}
+
+/* =========================================================
+   4) IndexedDB
+   ========================================================= */
+const DB_NAME = 'FamilyTreeDB_v7';
+const STORE = 'handles';
+function openDB(){
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
+    req.onsuccess = e => res(e.target.result);
+    req.onerror = e => rej(e.target.error);
+  });
+}
+async function saveFolderHandle(h){
+  try{
+    const db = await openDB();
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put(h, 'folder');
+    return new Promise(r => { tx.oncomplete = r; tx.onerror = r; });
+  } catch(e){}
+}
+async function getFolderHandle(){
+  try{
+    const db = await openDB();
+    const tx = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).get('folder');
+    return new Promise(r => {
+      req.onsuccess = () => r(req.result || null);
+      req.onerror = () => r(null);
+    });
+  } catch(e){ return null; }
+}
+
+/* =========================================================
+   5) Combo box + ਟਰੀ
+   ========================================================= */
+const treeEl   = document.getElementById('tree');
+const statusEl = document.getElementById('status');
+const hintEl   = document.getElementById('hint');
+const searchEl = document.getElementById('search');
+const casteCombo = document.getElementById('casteCombo');
+const headCombo  = document.getElementById('headCombo');
+const delCasteBtn = document.getElementById('delCasteBtn');
+
+function refreshCasteCombo(){
+  casteCombo.innerHTML = '';
+  castesList.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    if (String(c.id) === String(currentCasteId)) opt.selected = true;
+    casteCombo.appendChild(opt);
+  });
+  if (castesList.length < 2){
+    delCasteBtn.disabled = true;
+    delCasteBtn.style.opacity = .4;
+    delCasteBtn.style.cursor = 'not-allowed';
+  } else {
+    delCasteBtn.disabled = false;
+    delCasteBtn.style.opacity = 1;
+    delCasteBtn.style.cursor = 'pointer';
+  }
+}
+
+function refreshHeadCombo(heads){
+  const prevFilter = currentHeadFilter;
+  headCombo.innerHTML = '';
+
+  const optNone = document.createElement('option');
+  optNone.value = '__NONE__';
+  optNone.textContent = '— ਚੁਣੋ —';
+  headCombo.appendChild(optNone);
+
+  const optAll = document.createElement('option');
+  optAll.value = '__ALL__';
+  optAll.textContent = 'ਸਾਰੇ ਪਰਿਵਾਰ (' + heads.length + ')';
+  headCombo.appendChild(optAll);
+
+  heads.forEach(h => {
+    const o = document.createElement('option');
+    o.value = String(h.id);
+    o.textContent = h.name;
+    headCombo.appendChild(o);
+  });
+
+  let valid = (prevFilter === '__ALL__' || prevFilter === '__NONE__');
+  if (!valid){
+    valid = heads.some(h => String(h.id) === String(prevFilter));
+  }
+  if (valid){
+    headCombo.value = prevFilter;
+  } else {
+    currentHeadFilter = '__NONE__';
+    headCombo.value = '__NONE__';
+  }
+}
+
+casteCombo.addEventListener('change', () => {
+  currentCasteId = casteCombo.value;
+  currentHeadFilter = '__NONE__';
+  expandedNodes.clear();
+  draw();
+  const c = castesList.find(x => String(x.id) === String(currentCasteId));
+  statusEl.textContent = c ? ('🌾 ਗੋਤ: ' + c.name) : '';
+});
+
+headCombo.addEventListener('change', () => {
+  currentHeadFilter = headCombo.value;
+  expandedNodes.clear();
+  draw();
+});
+
+function avatarHTML(p){
+  const initial = esc((p.name || '?').trim().charAt(0) || '?');
+  const photo = (p.photo || '').trim();
+  if (photo){
+    return `<div class="avatar" data-photo-id="${esc(p.id)}" title="ਪੂਰੀ ਤਸਵੀਰ ਵੇਖਣ ਲਈ ਕਲਿਕ ਕਰੋ">
+      <span>${initial}</span>
+      <img src="${esc(photo)}" alt="" onerror="this.style.display='none'">
+    </div>`;
+  }
+  return `<div class="avatar no-photo"><span>${initial}</span></div>`;
+}
+
+/* ✅ cardFor — ਜਾਣਕਾਰੀ ਬਟਨ ਵੀ ਸ਼ਾਮਲ */
+function cardFor(p, opts = {}){
+  const div = document.createElement('div');
+  div.className = 'card ' + (isFemale(p.gender) ? 'female' : 'male');
+  if (opts.root) div.classList.add('root-card');
+  div.dataset.name = p.name || '';
+  div.dataset.id = p.id;
+
+  const hasInfo = !!(p.info && String(p.info).trim());
+  const infoBtnHTML = `<button class="info-btn${hasInfo?'':' empty'}" title="${hasInfo?'ਹੋਰ ਜਾਣਕਾਰੀ ਵੇਖੋ':'ਕੋਈ ਜਾਣਕਾਰੀ ਨਹੀਂ — ਸੋਧੋ ਵਿੱਚ ਭਰੋ'}">i</button>`;
+
+  div.innerHTML =
+    infoBtnHTML +
+    avatarHTML(p) +
+    `<div class="details">
+       <span class="name">${esc(p.name)}</span>
+       ${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}
+     </div>`;
+
+  // ℹ ਬਟਨ ਤੇ ਕਲਿਕ
+  const infoBtn = div.querySelector('.info-btn');
+  infoBtn.addEventListener('click', ev => {
+    ev.stopPropagation();
+    openInfoPopup(p.id);
+  });
+
+  const av = div.querySelector('.avatar');
+  if (!av.classList.contains('no-photo')){
+    av.addEventListener('click', ev => {
+      ev.stopPropagation();
+      openLightbox(p.id);
+    });
+  }
+  return div;
+}
+
+function buildNode(person, byId, data, isRoot, showSpouseForRoot){
+  const li = document.createElement('li');
+  const nodeBox = document.createElement('div');
+  nodeBox.className = 'node-box';
+
+  const couple = document.createElement('div');
+  couple.className = 'couple';
+
+  couple.appendChild(cardFor(person, {root:isRoot}));
+  if (person.spouse_id){
+    const sp = byId[String(person.spouse_id)];
+    if (sp && String(sp.id) !== String(person.id)){
+      const h = document.createElement('span');
+      h.className = 'heart'; h.textContent = '❤';
+      couple.appendChild(h);
+      couple.appendChild(cardFor(sp));
+    }
+  }
+
+  const children = getChildrenOf(person, byId, data);
+  const hasChildren = children.length > 0;
+  const isExpanded = expandedNodes.has(String(person.id));
+
+  const arrows = document.createElement('div');
+  arrows.className = 'node-arrows';
+
+  const leftBtn = document.createElement('button');
+  leftBtn.className = 'arr-btn arr-left' + (!hasChildren || !isExpanded ? ' disabled' : '');
+  leftBtn.textContent = '◀';
+  leftBtn.title = hasChildren ? 'ਬੱਚੇ ਲੁਕਾਓ' : 'ਕੋਈ ਬੱਚੇ ਨਹੀਂ';
+  leftBtn.disabled = !hasChildren || !isExpanded;
+  leftBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!hasChildren || !isExpanded) return;
+    const toRemove = [];
+    function collect(pid){
+      toRemove.push(String(pid));
+      const pr = byId[pid];
+      if (!pr) return;
+      getChildrenOf(pr, byId, data).forEach(c => collect(c.id));
+    }
+    collect(person.id);
+    toRemove.forEach(id => expandedNodes.delete(id));
+    draw();
+  });
+
+  const rightBtn = document.createElement('button');
+  rightBtn.className = 'arr-btn arr-right' + (!hasChildren || isExpanded ? ' disabled' : '');
+  rightBtn.textContent = '▶';
+  rightBtn.title = hasChildren ? 'ਬੱਚੇ ਦਿਖਾਓ' : 'ਕੋਈ ਬੱਚੇ ਨਹੀਂ';
+  rightBtn.disabled = !hasChildren || isExpanded;
+  rightBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!hasChildren || isExpanded) return;
+    const myFamilyId = getFamilyHeadId(String(person.id), byId);
+    const toRemove = [];
+    expandedNodes.forEach(expId => {
+      if (getFamilyHeadId(expId, byId) !== myFamilyId) toRemove.push(expId);
+    });
+    toRemove.forEach(id => expandedNodes.delete(id));
+    expandedNodes.add(String(person.id));
+    draw();
+  });
+
+  arrows.appendChild(leftBtn);
+  arrows.appendChild(rightBtn);
+  nodeBox.appendChild(arrows);
+  nodeBox.appendChild(couple);
+  li.appendChild(nodeBox);
+
+  if (hasChildren && isExpanded){
+    const ul = document.createElement('ul');
+    children.forEach(ch => ul.appendChild(buildNode(ch, byId, data, false, true)));
+    li.appendChild(ul);
+  }
+  return li;
+}
+
+function draw(){
+  const members = (casteData[currentCasteId] || []).filter(r => r.id && r.name);
+  const caste = castesList.find(c => String(c.id) === String(currentCasteId));
+
+  treeEl.innerHTML = '';
+
+  if (!members.length){
+    headCombo.innerHTML = '<option value="__NONE__">— ਚੁਣੋ —</option>';
+    headCombo.value = '__NONE__';
+    currentHeadFilter = '__NONE__';
+    const empty = document.createElement('div');
+    empty.className = 'empty-caste';
+    empty.innerHTML = 'ਇਸ ਗੋਤ ਵਿੱਚ ਹਾਲੇ ਕੋਈ ਮੈਂਬਰ ਨਹੀਂ।<br>' +
+      '<b>"✏️ ਸੋਧੋ"</b> ਦਬਾ ਕੇ ਨਵੇਂ ਮੁਖੀ ਅਤੇ ਮੈਂਬਰ ਜੋੜੋ।';
+    treeEl.appendChild(empty);
+    hintEl.textContent = caste ? ('🌾 ' + caste.name + ' — ਖਾਲੀ') : '';
+    statusEl.textContent = '0 ਮੈਂਬਰ';
+    return;
+  }
+
+  const byId = {};
+  members.forEach(r => byId[String(r.id)] = r);
+  const allHeads = findFamilyHeads(members);
+
+  refreshHeadCombo(allHeads);
+
+  if (currentHeadFilter === '__NONE__'){
+    const empty = document.createElement('div');
+    empty.className = 'empty-caste';
+    empty.innerHTML = '👑 ਉੱਪਰ ਦਿੱਤੇ <b>"ਪਰਿਵਾਰਕ ਮੁਖੀ ਚੁਣੋ"</b> ਕੰਬੋ ਬਾਕਸ ਵਿੱਚੋਂ ਪਰਿਵਾਰ ਚੁਣੋ।<br>' +
+      'ਜਾਂ <b>"ਸਾਰੇ ਪਰਿਵਾਰ"</b> ਚੁਣ ਕੇ ਸਾਰੇ ਇਕੱਠੇ ਦੇਖੋ।';
+    treeEl.appendChild(empty);
+    hintEl.textContent = '👑 ਕੰਬੋ ਬਾਕਸ ਵਿੱਚੋਂ ਚੁਣੋ';
+    statusEl.textContent = allHeads.length + ' ਪਰਿਵਾਰ • ' + members.length + ' ਮੈਂਬਰ';
+    return;
+  }
+
+  let heads = allHeads;
+  if (currentHeadFilter !== '__ALL__'){
+    heads = allHeads.filter(h => String(h.id) === String(currentHeadFilter));
+    if (!heads.length){
+      currentHeadFilter = '__NONE__';
+      headCombo.value = '__NONE__';
+      draw();
+      return;
+    }
+  }
+
+  if (heads.length === 1){
+    const hasExpandedHere = [...expandedNodes].some(expId =>
+      getFamilyHeadId(expId, byId) === String(heads[0].id)
+    );
+    const ul = document.createElement('ul');
+    ul.appendChild(buildNode(heads[0], byId, members, true, hasExpandedHere));
+    treeEl.appendChild(ul);
+    const totalMembers = countFamilyMembers(heads[0], members, byId);
+    hintEl.textContent = '👑 ' + heads[0].name + ' • ' + totalMembers + ' ਮੈਂਬਰ — ▶ ਨਾਲ ਲੜੀ ਖੋਲ੍ਹੋ';
+  } else {
+    heads.forEach((head, idx) => {
+      if (idx > 0){
+        const sep = document.createElement('div');
+        sep.className = 'family-separator';
+        sep.textContent = '◆ ◆ ◆';
+        treeEl.appendChild(sep);
+      }
+      const block = document.createElement('div');
+      block.className = 'family-block';
+      const hasExpanded = [...expandedNodes].some(expId =>
+        getFamilyHeadId(expId, byId) === String(head.id)
+      );
+      if (hasExpanded) block.classList.add('active');
+
+      const label = document.createElement('div');
+      label.className = 'family-label';
+      const totalMembers = countFamilyMembers(head, members, byId);
+      label.textContent = head.name + ' — ' + totalMembers + ' ਮੈਂਬਰ';
+      block.appendChild(label);
+
+      const ul = document.createElement('ul');
+      ul.appendChild(buildNode(head, byId, members, true, hasExpanded));
+      block.appendChild(ul);
+      treeEl.appendChild(block);
+    });
+    const totalCards = treeEl.querySelectorAll('.card').length;
+    hintEl.textContent = '👑 ' + heads.length + ' ਪਰਿਵਾਰ • ' + totalCards + ' ਕਾਰਡ — ▶ ਨਾਲ ਲੜੀ ਖੋਲ੍ਹੋ';
+  }
+
+  statusEl.textContent = members.length + ' ਮੈਂਬਰ';
+}
+
+/* =========================================================
+   6) Lightbox + Info Popup
+   ========================================================= */
+const lightbox     = document.getElementById('lightbox');
+const lightboxImg  = document.getElementById('lightboxImg');
+const lightboxName = document.getElementById('lightboxName');
+
+async function openLightbox(id){
+  const members = casteData[currentCasteId] || [];
+  const person = members.find(x => String(x.id) === String(id));
+  if (!person) return;
+  lightboxName.textContent = person.name;
+  let fullUrl = null;
+
+  if (dirHandle){
+    const base = photoKey(currentCasteId, id);
+    const candidates = [];
+    for (const ext of COMMON_IMG_EXTS) candidates.push(base + '_orig.' + ext);
+    candidates.push(base + '_orig');
+    candidates.push(base + '_full.jpg');
+    candidates.push(base + '.jpg');
+    for (const name of candidates){
+      try{
+        const fh = await dirHandle.getFileHandle(name);
+        const f = await fh.getFile();
+        fullUrl = await fileToDataUrl(f);
+        if (fullUrl) break;
+      } catch(e){}
+    }
+  }
+  if (!fullUrl && person.photo) fullUrl = person.photo;
+  if (!fullUrl){ alert('ਇਸ ਮੈਂਬਰ ਲਈ ਕੋਈ ਤਸਵੀਰ ਨਹੀਂ'); return; }
+  lightboxImg.src = fullUrl;
+  lightbox.classList.add('open');
+}
+document.getElementById('lightboxClose').onclick = () =>
+  lightbox.classList.remove('open');
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) lightbox.classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    lightbox.classList.remove('open');
+    document.getElementById('infoPopup').classList.remove('open');
+  }
+});
+
+/* ✅ ਜਾਣਕਾਰੀ ਪੌਪਅੱਪ */
+const infoPopup     = document.getElementById('infoPopup');
+const infoPopupName = document.getElementById('infoPopupName');
+const infoPopupBody = document.getElementById('infoPopupBody');
+function openInfoPopup(id){
+  const members = casteData[currentCasteId] || [];
+  const person = members.find(x => String(x.id) === String(id));
+  if (!person) return;
+
+  const genderTxt = isFemale(person.gender) ? 'ਇਸਤਰੀ' : 'ਪੁਰਸ਼';
+  infoPopupName.innerHTML =
+    esc(person.name) + ' <span class="badge">ID ' + esc(person.id) + ' • ' + genderTxt + '</span>';
+
+  const infoText = (person.info || '').trim();
+  if (infoText){
+    infoPopupBody.classList.remove('empty');
+    infoPopupBody.textContent = infoText;
+  } else {
+    infoPopupBody.classList.add('empty');
+    infoPopupBody.textContent = 'ਇਸ ਮੈਂਬਰ ਲਈ ਹਾਲੇ ਕੋਈ ਵਾਧੂ ਜਾਣਕਾਰੀ ਨਹੀਂ ਭਰੀ ਗਈ।\n\n"✏️ ਸੋਧੋ" ਦਬਾ ਕੇ ਸਭ ਤੋਂ ਸੱਜੇ ਕਾਲਮ "ℹ ਹੋਰ ਜਾਣਕਾਰੀ" ਵਿੱਚ ਭਰੋ।';
+  }
+  infoPopup.classList.add('open');
+}
+document.getElementById('infoPopupClose').onclick = () =>
+  infoPopup.classList.remove('open');
+infoPopup.addEventListener('click', e => {
+  if (e.target === infoPopup) infoPopup.classList.remove('open');
+});
+
+/* =========================================================
+   7) ਫਾਈਲ ਹੈਲਪਰ
+   ========================================================= */
+function fileToDataUrl(file){
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = () => res('');
+    r.readAsDataURL(file);
+  });
+}
+function resizeToDataUrl(img, maxSize, quality){
+  const scale = Math.min(maxSize/img.width, maxSize/img.height, 1);
+  const w = Math.max(1, Math.round(img.width * scale));
+  const h = Math.max(1, Math.round(img.height * scale));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  c.getContext('2d').drawImage(img, 0, 0, w, h);
+  return c.toDataURL('image/jpeg', quality);
+}
+function processImage(file, cb){
+  const reader = new FileReader();
+  reader.onload = e => {
+    const original = e.target.result;
+    const ext = extFromFile(file);
+    const img = new Image();
+    img.onload = () => cb({
+      thumb: resizeToDataUrl(img, 120, 0.78),
+      original: original,
+      ext: ext
+    });
+    img.onerror = () => cb(null);
+    img.src = original;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* =========================================================
+   8) ਐਕਸਲ ਬਣਾਉਣਾ (info ਕਾਲਮ ਸਮੇਤ)
+   ========================================================= */
+function buildWorkbook(folderMode){
+  const wb = XLSX.utils.book_new();
+  const usedNames = new Set();
+
+  const castesAoa = [['id', 'name']];
+  castesList.forEach(c => castesAoa.push([c.id, c.name]));
+  const ws1 = XLSX.utils.aoa_to_sheet(castesAoa);
+  ws1['!cols'] = [{wch:8},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws1, uniqueSheetName('ਗੋਤਾਂ', usedNames));
+
+  castesList.forEach(c => {
+    const members = casteData[c.id] || [];
+    const aoa = [HEADERS.slice()];
+    members.forEach(r => {
+      let photoVal = r.photo || '';
+      if (folderMode && isBase64(photoVal)) photoVal = photoKey(c.id, r.id) + '_thumb.jpg';
+      aoa.push([r.id, r.name, r.gender, r.father_id, r.mother_id,
+                r.spouse_id, r.note, photoVal, r.info || '']);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = [
+      {wch:6},{wch:22},{wch:10},{wch:11},{wch:11},{wch:12},{wch:26},{wch:30},{wch:40}
+    ];
+    const sn = uniqueSheetName(c.name, usedNames);
+    XLSX.utils.book_append_sheet(wb, ws, sn);
+  });
+
+  return wb;
+}
+
+async function writeFileToFolder(name, data){
+  if (!dirHandle) return false;
+  try{
+    const fh = await dirHandle.getFileHandle(name, {create:true});
+    const w = await fh.createWritable();
+    await w.write(data); await w.close();
+    return true;
+  } catch(e){ return false; }
+}
+async function savePhotoToFolder(key, dataUrl, suffix){
+  if (!dirHandle || !isBase64(dataUrl)) return false;
+  try{
+    const blob = await (await fetch(dataUrl)).blob();
+    return await writeFileToFolder(key + suffix, blob);
+  } catch(e){ return false; }
+}
+async function removePhotoFromFolder(key){
+  if (!dirHandle) return;
+  const names = [key + '_thumb.jpg', key + '_full.jpg', key + '.jpg', key + '_orig'];
+  for (const ext of COMMON_IMG_EXTS){
+    names.push(key + '_orig.' + ext);
+    names.push(key + '.' + ext);
+  }
+  for (const name of names){
+    try{ await dirHandle.removeEntry(name); } catch(e){}
+  }
+}
+async function saveAllToFolder(){
+  if (!dirHandle) return false;
+  const wb = buildWorkbook(true);
+  const arr = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+  await writeFileToFolder('ਪਿੰਡ_ਵੰਸ਼ਾਵਲੀ.xlsx', arr);
+  for (const caste of castesList){
+    const members = casteData[caste.id] || [];
+    for (const p of members){
+      if (isBase64(p.photo)){
+        const key = photoKey(caste.id, p.id);
+        await savePhotoToFolder(key, p.photo, '_thumb.jpg');
+      }
+    }
+  }
+  await writeFileToFolder('ਪਿੰਡ_ਵੰਸ਼ਾਵਲੀ.json',
+    JSON.stringify({castes: castesList, data: casteData}, null, 2));
+  return true;
+}
+
+document.getElementById('saveAllBtn').onclick = async () => {
+  if (!dirHandle){ alert('⚠ ਪਹਿਲਾਂ ਫੋਲਡਰ ਚੁਣੋ।'); return; }
+  statusEl.textContent = '⏳ ਸੇਵ ਹੋ ਰਿਹਾ ਹੈ...';
+  await saveAllToFolder();
+  statusEl.textContent = `💾 ਸੇਵ ਹੋਇਆ — ${castesList.length} ਸ਼ੀਟਾਂ + ਥੰਬਨੇਲ + JSON`;
+};
+document.getElementById('downloadBtn').onclick = async () => {
+  if (dirHandle) await saveAllToFolder();
+  const wb = buildWorkbook(!!dirHandle);
+  XLSX.writeFile(wb, 'ਪਿੰਡ_ਵੰਸ਼ਾਵਲੀ.xlsx');
+  statusEl.textContent = dirHandle
+    ? `📥 ਐਕਸਲ ਡਾਊਨਲੋਡ (${castesList.length} ਸ਼ੀਟਾਂ) + ਫੋਲਡਰ ਵਿੱਚ ਸੇਵ ਹੋਈ`
+    : `📥 ਐਕਸਲ ਡਾਊਨਲੋਡ (${castesList.length} ਸ਼ੀਟਾਂ)`;
+};
+
+/* =========================================================
+   9) ਫੋਲਡਰ ਚੁਣੋ / ਲੋਡ ਕਰੋ
+   ========================================================= */
+const overlay = document.getElementById('folderOverlay');
+function showOverlay(){ overlay.classList.add('open'); }
+function hideOverlay(){ overlay.classList.remove('open'); }
+
+async function pickFolder(){
+  if (!('showDirectoryPicker' in window)){
+    alert('⚠ ਇਹ ਸੁਵਿਧਾ ਸਿਰਫ Chrome ਜਾਂ Edge ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਕੰਮ ਕਰਦੀ ਹੈ।');
+    return false;
+  }
+  try{
+    const h = await window.showDirectoryPicker({ mode:'readwrite' });
+    const perm = await h.requestPermission({ mode:'readwrite' });
+    if (perm !== 'granted') return false;
+    dirHandle = h;
+    await saveFolderHandle(h);
+    return true;
+  } catch(e){ return false; }
+}
+
+async function readWorkbookIntoState(wb){
+  try{
+    if (!wb.SheetNames || wb.SheetNames.length < 1) return false;
+    const sheet1 = wb.Sheets[wb.SheetNames[0]];
+    const castesJson = XLSX.utils.sheet_to_json(sheet1, {defval: ''});
+    const newCastes = castesJson.map(normalizeCasteRow).filter(c => c.id && c.name);
+    if (!newCastes.length) return false;
+
+    const newCasteData = {};
+    for (let i = 0; i < newCastes.length; i++){
+      const caste = newCastes[i];
+      const sheetName = wb.SheetNames[i + 1];
+      if (!sheetName){ newCasteData[caste.id] = []; continue; }
+      const json = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {defval: ''});
+      const members = json.map(normalizeRow).filter(r => r.id && r.name);
+
+      if (dirHandle){
+        for (const r of members){
+          const ref = r.photo || '';
+          if (!ref || isBase64(ref)) continue;
+          let loaded = false;
+          try{
+            const fh = await dirHandle.getFileHandle(ref);
+            const f = await fh.getFile();
+            r.photo = await fileToDataUrl(f);
+            loaded = true;
+          } catch(e){}
+          if (!loaded){
+            try{
+              const key = photoKey(caste.id, r.id);
+              const fh2 = await dirHandle.getFileHandle(key + '_thumb.jpg');
+              const f2 = await fh2.getFile();
+              r.photo = await fileToDataUrl(f2);
+            } catch(e2){ r.photo = ''; }
+          }
+        }
+      }
+      newCasteData[caste.id] = members;
+    }
+
+    castesList = newCastes;
+    casteData = newCasteData;
+    currentCasteId = castesList[0].id;
+    return true;
+  } catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+async function loadExcelFromFolder(){
+  if (!dirHandle) return false;
+  try{
+    let fh;
+    for (const fname of ['ਪਿੰਡ_ਵੰਸ਼ਾਵਲੀ.xlsx','ਪਰਿਵਾਰ_ਵੰਸ਼ਾਵਲੀ.xlsx']){
+      try{ fh = await dirHandle.getFileHandle(fname); break; } catch(e){}
+    }
+    if (!fh) return false;
+    const file = await fh.getFile();
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buf), {type:'array'});
+    return await readWorkbookIntoState(wb);
+  } catch(e){ return false; }
+}
+
+function updateFolderBtn(){
+  const btn = document.getElementById('folderBtn');
+  if (dirHandle){
+    btn.textContent = '📁 ' + dirHandle.name;
+    btn.classList.add('active');
+  } else {
+    btn.textContent = '📁 ਫੋਲਡਰ ਚੁਣੋ';
+    btn.classList.remove('active');
+  }
+}
+
+document.getElementById('selectFolderBtn').onclick = async () => {
+  const ok = await pickFolder();
+  if (!ok){ statusEl.textContent = '❌ ਫੋਲਡਰ ਨਹੀਂ ਚੁਣਿਆ ਗਿਆ'; return; }
+  const loaded = await loadExcelFromFolder();
+  if (!loaded){
+    castesList = DEFAULT_CASTES.map(c => ({...c}));
+    casteData = {};
+    Object.keys(DEFAULT_CASTE_DATA).forEach(k => {
+      casteData[k] = DEFAULT_CASTE_DATA[k].map(r => ({...r}));
+    });
+    currentCasteId = castesList[0].id;
+    await saveAllToFolder();
+  }
+  updateFolderBtn();
+  hideOverlay();
+  currentHeadFilter = '__NONE__';
+  expandedNodes.clear();
+  refreshCasteCombo();
+  draw();
+  statusEl.textContent = loaded
+    ? `✅ ਫੋਲਡਰ ਤੋਂ ${castesList.length} ਗੋਤਾਂ ਦਾ ਡਾਟਾ ਲੋਡ ਹੋਇਆ`
+    : '✅ ਨਵਾਂ ਫੋਲਡਰ ਤਿਆਰ';
+};
+document.getElementById('skipFolderBtn').onclick = () => {
+  hideOverlay(); refreshCasteCombo(); draw();
+  statusEl.textContent = 'ℹ ਫੋਲਡਰ ਤੋਂ ਬਿਨਾਂ ਜਾਰੀ';
+};
+document.getElementById('folderBtn').onclick = async () => {
+  const ok = await pickFolder();
+  if (!ok) return;
+  const loaded = await loadExcelFromFolder();
+  if (!loaded) await saveAllToFolder();
+  updateFolderBtn();
+  currentHeadFilter = '__NONE__';
+  expandedNodes.clear();
+  refreshCasteCombo();
+  draw();
+  statusEl.textContent = '✅ ਫੋਲਡਰ ਸੈੱਟ ਹੋਇਆ';
+};
+
+/* =========================================================
+   10) ਐਕਸਲ ਅੱਪਲੋਡ
+   ========================================================= */
+document.getElementById('fileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    try{
+      const wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
+      const ok = await readWorkbookIntoState(wb);
+      if (!ok) throw new Error('ਫਾਈਲ ਦੀ ਬਣਤਰ ਗਲਤ ਹੈ — Sheet 1 ਵਿੱਚ ਗੋਤਾਂ ਦੀ ਸੂਚੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ');
+      expandedNodes.clear();
+      currentHeadFilter = '__NONE__';
+      refreshCasteCombo();
+      draw();
+      statusEl.textContent = `✅ ਫਾਈਲ ਲੋਡ ਹੋਈ — ${castesList.length} ਗੋਤਾਂ, ਕੁੱਲ ${Object.values(casteData).reduce((s,a)=>s+a.length,0)} ਮੈਂਬਰ`;
+    } catch(err){
+      statusEl.textContent = '❌ ਗਲਤੀ: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  e.target.value = '';
+});
+
+/* =========================================================
+   11) ਟੂਲਬਾਰ ਬਟਨ
+   ========================================================= */
+document.getElementById('collapseAllBtn').onclick = () => {
+  expandedNodes.clear();
+  draw();
+  statusEl.textContent = '⏏ ਸਾਰੇ ਪਰਿਵਾਰ ਬੰਦ — ਸਿਰਫ ਮੁਖੀ ਦਿਖਾਏ';
+};
+document.getElementById('printBtn').onclick = () => window.print();
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.trim().toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    c.classList.toggle('hit', !!q && c.dataset.name.toLowerCase().includes(q));
+  });
+  if (q){
+    const first = document.querySelector('.card.hit');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+  }
+});
+
+/* =========================================================
+   12) ਗੋਤ ਪ੍ਰਬੰਧ
+   ========================================================= */
+document.getElementById('addCasteBtn').onclick = () => {
+  const name = prompt('ਨਵੀਂ ਗੋਤ ਦਾ ਨਾਮ ਲਿਖੋ:');
+  if (!name || !name.trim()) return;
+  const usedIds = new Set(castesList.map(c => String(c.id)));
+  let nextId = 1;
+  while (usedIds.has(String(nextId))) nextId++;
+  const newCaste = { id: String(nextId), name: name.trim() };
+  castesList.push(newCaste);
+  casteData[newCaste.id] = [];
+  currentCasteId = newCaste.id;
+  currentHeadFilter = '__NONE__';
+  expandedNodes.clear();
+  refreshCasteCombo();
+  draw();
+  statusEl.textContent = `✅ ਨਵੀਂ ਗੋਤ ਜੋੜੀ: ${newCaste.name} — ਹੁਣ "✏️ ਸੋਧੋ" ਨਾਲ ਮੈਂਬਰ ਜੋੜੋ`;
+};
+
+delCasteBtn.onclick = async () => {
+  if (castesList.length < 2){
+    alert('ਘੱਟੋ-ਘੱਟ ਇੱਕ ਗੋਤ ਜ਼ਰੂਰੀ ਹੈ।');
+    return;
+  }
+  const caste = castesList.find(c => String(c.id) === String(currentCasteId));
+  if (!caste) return;
+  const memberCount = (casteData[caste.id] || []).length;
+  if (!confirm(`"${caste.name}" ਗੋਤ (${memberCount} ਮੈਂਬਰ) ਹਟਾਉਣੀ ਹੈ?`)) return;
+
+  if (dirHandle){
+    const members = casteData[caste.id] || [];
+    for (const m of members){
+      await removePhotoFromFolder(photoKey(caste.id, m.id));
+    }
+  }
+
+  castesList = castesList.filter(c => String(c.id) !== String(currentCasteId));
+  delete casteData[currentCasteId];
+  currentCasteId = castesList[0].id;
+  currentHeadFilter = '__NONE__';
+  expandedNodes.clear();
+  refreshCasteCombo();
+  draw();
+  statusEl.textContent = `🗑 ਗੋਤ ਹਟਾਈ ਗਈ`;
+};
+
+/* =========================================================
+   13) ਐਡਿਟ ਮੋਡਲ (info ਫੀਲਡ ਸਮੇਤ)
+   ========================================================= */
+const editModal = document.getElementById('editModal');
+const editTbody = document.querySelector('#editTable tbody');
+const refPanel  = document.getElementById('refPanel');
+const editCasteTag = document.getElementById('editCasteTag');
+
+function updateThumb(tr){
+  const val = tr.querySelector('input[data-f="photo"]').value.trim();
+  const thumb = tr.querySelector('.photo-thumb');
+  if (val){
+    thumb.innerHTML = `<img src="${esc(val)}" onerror="this.parentNode.textContent='?'">`;
+  } else { thumb.textContent = '?'; }
+}
+function makeRow(p){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input data-f="id" value="${esc(p.id)}" placeholder="ID"></td>
+    <td><input data-f="name" value="${esc(p.name)}" placeholder="ਨਾਮ"></td>
+    <td>
+      <select data-f="gender">
+        <option value="ਪੁਰਸ਼"${!isFemale(p.gender)?' selected':''}>ਪੁਰਸ਼</option>
+        <option value="ਇਸਤਰੀ"${isFemale(p.gender)?' selected':''}>ਇਸਤਰੀ</option>
+      </select>
+    </td>
+    <td><input data-f="father_id" value="${esc(p.father_id)}" placeholder="—"></td>
+    <td><input data-f="mother_id" value="${esc(p.mother_id)}" placeholder="—"></td>
+    <td><input data-f="spouse_id" value="${esc(p.spouse_id)}" placeholder="—"></td>
+    <td><input data-f="note" value="${esc(p.note)}" placeholder="ਟਿੱਪਣੀ"></td>
+    <td>
+      <div class="photo-cell">
+        <div class="photo-thumb">?</div>
+        <input data-f="photo" value="${esc(p.photo || '')}" placeholder="URL ਜਾਂ base64">
+        <button type="button" class="photo-btn" title="ਤਸਵੀਰ ਅੱਪਲੋਡ ਕਰੋ">📷</button>
+        <input type="file" accept="image/*" hidden>
+        <button type="button" class="photo-clear-btn" title="ਤਸਵੀਰ ਹਟਾਓ">✕</button>
+      </div>
+    </td>
+    <td><textarea data-f="info" placeholder="ਜਨਮ ਤਾਰੀਖ, ਵਿਦਿਆ, ਕੰਮ, ਪਤਾ, ਆਦਿ">${esc(p.info || '')}</textarea></td>
+    <td><button class="del-btn" title="ਹਟਾਓ">✕</button></td>
+  `;
+  tr.querySelector('.del-btn').addEventListener('click', () => {
+    tr.remove(); updateRefPanel();
+  });
+
+  tr.querySelector('.photo-clear-btn').addEventListener('click', async () => {
+    const photoInput = tr.querySelector('input[data-f="photo"]');
+    const idVal = tr.querySelector('input[data-f="id"]').value.trim();
+    photoInput.value = '';
+    updateThumb(tr); updateRefPanel();
+    if (dirHandle && idVal){
+      await removePhotoFromFolder(photoKey(currentCasteId, idVal));
+      statusEl.textContent = `🗑 ID ${idVal} ਦੀ ਤਸਵੀਰ ਫੋਲਡਰ ਤੋਂ ਹਟਾਈ ਗਈ`;
+    } else {
+      statusEl.textContent = '🗑 ਤਸਵੀਰ ਹਟਾਈ ਗਈ (ਸੇਵ ਕਰਨ ਤੇ ਪੱਕੀ ਹੋਵੇਗੀ)';
+    }
+  });
+
+  const photoBtn  = tr.querySelector('.photo-btn');
+  const fileInput = tr.querySelector('input[type=file]');
+
+  photoBtn.addEventListener('click', async () => {
+    if (!dirHandle){
+      const ok = await pickFolder();
+      if (!ok){
+        alert('⚠ ਤਸਵੀਰ ਸੇਵ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਫੋਲਡਰ ਚੁਣਨਾ ਜ਼ਰੂਰੀ ਹੈ।');
+        return;
+      }
+      updateFolderBtn();
+      statusEl.textContent = '✅ ਫੋਲਡਰ ਸੈੱਟ ਹੋਇਆ — ਹੁਣ ਤਸਵੀਰ ਅੱਪਲੋਡ ਕਰੋ';
+    }
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', async e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (!dirHandle){
+      alert('⚠ ਪਹਿਲਾਂ ਫੋਲਡਰ ਚੁਣੋ।');
+      e.target.value = '';
+      return;
+    }
+    processImage(f, async result => {
+      if (!result){ alert('ਤਸਵੀਰ ਪੜ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ'); return; }
+      const photoInput = tr.querySelector('input[data-f="photo"]');
+      photoInput.value = result.thumb;
+      updateThumb(tr); updateRefPanel();
+      const idVal = tr.querySelector('input[data-f="id"]').value.trim();
+      if (idVal){
+        const key = photoKey(currentCasteId, idVal);
+        await savePhotoToFolder(key, result.thumb, '_thumb.jpg');
+        await savePhotoToFolder(key, result.original, '_orig.' + result.ext);
+        statusEl.textContent = `✅ ਤਸਵੀਰ ਸੇਵ ਹੋਈ: ${key}_thumb.jpg + ${key}_orig.${result.ext}`;
+      } else {
+        statusEl.textContent = '⚠ ID ਭਰੋ — ਫਿਰ ਤਸਵੀਰ ਦੁਬਾਰਾ ਅੱਪਲੋਡ ਕਰੋ';
+      }
+    });
+    e.target.value = '';
+  });
+
+  const photoInput = tr.querySelector('input[data-f="photo"]');
+  photoInput.addEventListener('input', () => updateThumb(tr));
+  updateThumb(tr);
+  return tr;
+}
+function readEditTable(){
+  const rows = [];
+  editTbody.querySelectorAll('tr').forEach(tr => {
+    const obj = {};
+    tr.querySelectorAll('[data-f]').forEach(el => {
+      obj[el.dataset.f] = String(el.value).trim();
+    });
+    if (obj.id || obj.name) rows.push(obj);
+  });
+  return rows;
+}
+function updateRefPanel(){
+  const rows = readEditTable();
+  if (!rows.length){ refPanel.innerHTML = '<i>ਕੋਈ ਮੈਂਬਰ ਨਹੀਂ</i>'; return; }
+  refPanel.innerHTML = '<b>ID → ਨਾਮ:</b> ' +
+    rows.map(r => `<span><b>${esc(r.id)}</b> → ${esc(r.name)}</span>`).join('');
+}
+document.getElementById('editBtn').onclick = () => {
+  const caste = castesList.find(c => String(c.id) === String(currentCasteId));
+  editCasteTag.textContent = '🌾 ' + (caste ? caste.name : '?');
+  editTbody.innerHTML = '';
+  const members = casteData[currentCasteId] || [];
+  members.forEach(p => editTbody.appendChild(makeRow(p)));
+  updateRefPanel();
+  editModal.classList.add('open');
+};
+document.getElementById('cancelEditBtn').onclick = () =>
+  editModal.classList.remove('open');
+document.getElementById('modalCloseBtn').onclick = () =>
+  editModal.classList.remove('open');
+
+document.getElementById('addRowBtn').onclick = () => {
+  const rows = readEditTable();
+  const usedIds = new Set(rows.map(r => String(r.id)));
+  let next = 1;
+  while (usedIds.has(String(next))) next++;
+  const tr = makeRow({id:String(next), name:'', gender:'ਪੁਰਸ਼',
+                      father_id:'', mother_id:'', spouse_id:'', note:'', photo:'', info:''});
+  editTbody.appendChild(tr);
+  updateRefPanel();
+  tr.querySelector('input[data-f="name"]').focus();
+  tr.scrollIntoView({behavior:'smooth', block:'nearest'});
+};
+
+document.getElementById('addFamilyBtn').onclick = () => {
+  const rows = readEditTable();
+  const usedIds = new Set(rows.map(r => String(r.id)));
+  let next = 1;
+  while (usedIds.has(String(next))) next++;
+  const tr = makeRow({id:String(next), name:'', gender:'ਪੁਰਸ਼',
+                      father_id:'', mother_id:'', spouse_id:'', note:'ਨਵਾਂ ਪਰਿਵਾਰ ਮੁਖੀ', photo:'', info:''});
+  editTbody.appendChild(tr);
+  updateRefPanel();
+  const nameInput = tr.querySelector('input[data-f="name"]');
+  nameInput.placeholder = 'ਨਵੇਂ ਪਰਿਵਾਰ ਦੇ ਮੁਖੀ ਦਾ ਨਾਮ';
+  nameInput.focus();
+  tr.scrollIntoView({behavior:'smooth', block:'nearest'});
+  statusEl.textContent = '📝 ਨਵਾਂ ਪਰਿਵਾਰ: ਨਾਮ ਭਰੋ, ਪਿਤਾ/ਮਾਤਾ ਖਾਲੀ ਛੱਡੋ';
+};
+
+editTbody.addEventListener('input', updateRefPanel);
+editTbody.addEventListener('change', updateRefPanel);
+
+document.getElementById('saveEditBtn').onclick = async () => {
+  const rows = readEditTable();
+  const ids = new Set();
+  for (const r of rows){
+    if (!r.id){ alert('ਹਰ ਮੈਂਬਰ ਦੀ ID ਜ਼ਰੂਰੀ ਹੈ'); return; }
+    if (!r.name){ alert(`ID ${r.id} ਲਈ ਨਾਮ ਜ਼ਰੂਰੀ ਹੈ`); return; }
+    if (ids.has(r.id)){ alert(`ਦੁਹਰਾਈ ID: ${r.id}`); return; }
+    ids.add(r.id);
+  }
+  for (const r of rows){
+    if (r.father_id && !ids.has(r.father_id)){
+      alert(`ID ${r.id}: ਪਿਤਾ ID ${r.father_id} ਮੌਜੂਦ ਨਹੀਂ`); return;
+    }
+    if (r.mother_id && !ids.has(r.mother_id)){
+      alert(`ID ${r.id}: ਮਾਤਾ ID ${r.mother_id} ਮੌਜੂਦ ਨਹੀਂ`); return;
+    }
+    if (r.spouse_id && !ids.has(r.spouse_id)){
+      alert(`ID ${r.id}: ਜੀਵਨ ਸਾਥੀ ID ${r.spouse_id} ਮੌਜੂਦ ਨਹੀਂ`); return;
+    }
+  }
+
+  casteData[currentCasteId] = rows.map(r => ({
+    id:r.id, name:r.name, gender:r.gender || 'ਪੁਰਸ਼',
+    father_id:r.father_id, mother_id:r.mother_id,
+    spouse_id:r.spouse_id, note:r.note, photo:r.photo || '', info:r.info || ''
+  }));
+  if (dirHandle) await saveAllToFolder();
+  expandedNodes.clear();
+  draw();
+  editModal.classList.remove('open');
+  statusEl.textContent = `💾 ਸੇਵ ਹੋਇਆ — ${rows.length} ਮੈਂਬਰ`;
+};
+editModal.addEventListener('click', e => {
+  if (e.target === editModal) editModal.classList.remove('open');
+});
+
+/* =========================================================
+   14) ਸ਼ੁਰੂਆਤ
+   ========================================================= */
+(async function init(){
+  refreshCasteCombo();
+  const saved = await getFolderHandle();
+  if (saved){
+    try{
+      let perm = await saved.queryPermission({ mode:'readwrite' });
+      if (perm !== 'granted'){
+        try{ perm = await saved.requestPermission({ mode:'readwrite' }); }
+        catch(e){ perm = 'denied'; }
+      }
+      if (perm === 'granted'){
+        dirHandle = saved;
+        updateFolderBtn();
+        const loaded = await loadExcelFromFolder();
+        if (!loaded){
+          castesList = DEFAULT_CASTES.map(c => ({...c}));
+          casteData = {};
+          Object.keys(DEFAULT_CASTE_DATA).forEach(k => {
+            casteData[k] = DEFAULT_CASTE_DATA[k].map(r => ({...r}));
+          });
+          currentCasteId = castesList[0].id;
+          await saveAllToFolder();
+        }
+        hideOverlay();
+        currentHeadFilter = '__NONE__';
+        refreshCasteCombo();
+        draw();
+        statusEl.textContent = loaded
+          ? `✅ ਫੋਲਡਰ ਤੋਂ ${castesList.length} ਗੋਤਾਂ ਦਾ ਡਾਟਾ ਲੋਡ ਹੋਇਆ`
+          : '✅ ਫੋਲਡਰ ਬਹਾਲ ਹੋਇਆ';
+        return;
+      }
+    } catch(e){}
+  }
+  showOverlay();
+  refreshCasteCombo();
+  draw();
+  statusEl.textContent = '🌾 ਗੋਤ ਜਾਂ ਮੁਖੀ ਰਿਸ਼ਤੇਦਾਰ ਚੁਣੋ';
+})();
+</script>
+</body>
+</html>
